@@ -104,7 +104,7 @@ def show_toggl_data(start_date: str, end_date: str):
 
 def main():
     st.title("Uli status")
-    st.write(f"A dashboard for Uli's daily status, how his life is going, etc. Welcome, {st.session_state.user['username'].title()}!")
+    st.write(f"A dashboard for Laura's daily status, how his life is going, etc. Welcome, Baby Uli!")
 
     # Use streamlit to get the date via a date picker
     default_date = datetime.now(timezone(timedelta(hours=-4))).date()
