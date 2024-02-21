@@ -51,6 +51,7 @@ def get_toggl_day(start_date: str, end_date: str, grouping="projects"):
 def get_toggl_projects():
     resp = httpx.get("https://api.track.toggl.com/api/v9/me/projects", auth=(os.environ['TOGGL_API_KEY'], 'api_token'))
     resp.raise_for_status()
+    st.write("get toggl projects response", resp)
     return resp.json()
 
 
@@ -70,7 +71,7 @@ def show_toggl_data(start_date: str, end_date: str):
     toggl_groupings = get_toggl_projects() if grouping == "projects" else get_toggl_clients()
 
     st.write(get_toggl_workspace())
-    st.write(toggl)
+    st.write(toggl) # is good.
     st.write(get_toggl_clients())
     st.write(get_toggl_projects())
 
