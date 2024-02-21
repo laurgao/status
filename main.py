@@ -67,7 +67,7 @@ def show_toggl_data(start_date: str, end_date: str):
     toggl_groupings = get_toggl_projects() if grouping == "projects" else get_toggl_clients()
 
     st.write(get_toggl_workspace())
-    st.write(get_toggl_day())
+    st.write(toggl)
     st.write(get_toggl_clients())
     st.write(get_toggl_projects())
 
