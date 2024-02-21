@@ -9,10 +9,6 @@ import streamlit as st
 
 # from discord_oauth import get_access_token, get_login_url, get_user_info
 
-AIRTABLE_API_KEY=os.environ['AIRTABLE_API_KEY']
-WEBHOOK_URL=os.environ['WEBHOOK_URL']
-OURA_API_KEY=os.environ['OURA_API_KEY']
-ALLOWED_DISCORD_IDS = os.environ['ALLOWED_DISCORD_IDS'].split(',')
 TTL = 60*60 # 1 hour
 
 
