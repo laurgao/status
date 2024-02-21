@@ -66,7 +66,10 @@ def show_toggl_data(start_date: str, end_date: str):
     toggl = get_toggl_day(start_date, end_date, grouping=grouping)
     toggl_groupings = get_toggl_projects() if grouping == "projects" else get_toggl_clients()
 
-    st.write(toggl_groupings)
+    st.write(get_toggl_workspace())
+    st.write(get_toggl_day())
+    st.write(get_toggl_clients())
+    st.write(get_toggl_projects())
 
     # New schema processing
     data = []
