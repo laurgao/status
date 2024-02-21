@@ -1,11 +1,13 @@
 import os
-import httpx
 from datetime import datetime, timedelta, timezone
-import streamlit as st
+
+import httpx
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
-from discord_oauth import get_user_info, get_access_token, get_login_url
+import streamlit as st
+
+# from discord_oauth import get_access_token, get_login_url, get_user_info
 
 AIRTABLE_API_KEY=os.environ['AIRTABLE_API_KEY']
 WEBHOOK_URL=os.environ['WEBHOOK_URL']
@@ -60,65 +62,6 @@ def get_toggl_clients():
     return resp.json()
 
 
-@st.cache_data(ttl=TTL)
-def get_airtable_day(date: str):
-    resp = httpx.get(f'https://api.airtable.com/v0/appq1TYckaWsk1tgt/Daily', params={
-        'maxRecords': 1,
-        'view': 'Grid view',
-        'filterByFormula': f'DATESTR(Date) = "{date}"',
-    }, headers={'Authorization': f'Bearer {AIRTABLE_API_KEY}'})
-    resp.raise_for_status()
-    records = resp.json()["records"]
-    return records[0]["fields"] if len(records) > 0 else None
-
-
-@st.cache_data(ttl=TTL)
-def get_oura_sleep(start_date: str, end_date: str):
-    resp = httpx.get("https://api.ouraring.com/v2/usercollection/daily_sleep", params={
-        "start_date": start_date,
-        "end_date": end_date,
-    }, headers={"Authorization": f"Bearer {OURA_API_KEY}"})
-    resp.raise_for_status()
-
-    return resp.json()
-
-
-
-def show_oura_sleep(start_date: str, end_date: str):
-    st.write("## Sleep")
-    sleep = get_oura_sleep(start_date, end_date)
-    if len(sleep['data']) == 0:
-        st.write("No sleep data found :(")
-        return
-
-    oura_data = sleep['data'][0]
-
-    st.write(f"Sleep score for {oura_data['day']} (i.e. sleep from previous night)")
-    # TODO: Show sleep hours, etc. stats
-
-    # Sleep Score Gauge
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=oura_data["score"],
-        domain={"x": [0, 1], "y": [0, 1]},
-        title={"text": f"Sleep Score for {oura_data['day']}"},
-        gauge={"axis": {"range": [0, 100], "tickwidth": 2}},
-        number={"suffix": "/100"}
-    ))
-
-    st.plotly_chart(fig)
-
-
-def show_journal(date: str):
-    # TODO: Show past journals, slider for which day to look at
-    st.write("## Journal")
-    day = get_airtable_day(date)
-    msg = day['Journal'] if day else "No journal data found :("
-    # st.markdown(f"""```md\n{msg}\n```""")
-    msg = msg.replace("\\*", "*")
-    st.markdown(msg)
-
-
 def show_toggl_data(start_date: str, end_date: str):
     st.write("## Time tracking")
 
@@ -165,21 +108,6 @@ def show_toggl_data(start_date: str, end_date: str):
 
 def main():
     st.title("Uli status")
-
-    if 'access_token' not in st.session_state:
-        # attempt getting it from ?code= query param
-        code = st.experimental_get_query_params().get('code', None)
-        if code:
-            code = code[0] # because query params are always lists
-            st.session_state.access_token = get_access_token(code)['access_token']
-            # TODO: If this fails our token expired, so we should delete it
-            st.session_state.user = get_user_info(st.session_state.access_token)
-            st.experimental_set_query_params()
-
-    if not ('user' in st.session_state and st.session_state.user['id'] in ALLOWED_DISCORD_IDS):
-        st.write(f"[Login with discord]({get_login_url()})")
-        return
-
     st.write(f"A dashboard for Uli's daily status, how his life is going, etc. Welcome, {st.session_state.user['username'].title()}!")
 
     # Use streamlit to get the date via a date picker
@@ -190,8 +118,8 @@ def main():
 
     # In order of longest period I have data for, to shortest. Most recently added at the top.
     show_toggl_data(date, date)
-    show_journal(prev_day_date)
-    show_oura_sleep(date, date)
+    # show_journal(prev_day_date)
+    # show_oura_sleep(date, date)
 
 
 if __name__ == '__main__':
