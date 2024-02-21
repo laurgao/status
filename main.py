@@ -42,6 +42,8 @@ def get_toggl_day(start_date: str, end_date: str, grouping="projects"):
     st.write(resp)
     resp.raise_for_status()
 
+    st.write(resp)
+    st.write(resp.json())
     return resp.json()
 
 
